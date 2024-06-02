@@ -12,7 +12,7 @@ local AskGPT = InputContainer:new {
 function AskGPT:init()
   self.ui.highlight:addToHighlightDialog("askgpt_ChatGPT", function(_reader_highlight_instance)
     return {
-      text = _("Ask ChatGPT"),
+      text = _("Hỏi ChatGPT"),
       enabled = Device:hasClipboard(),
       callback = function()
         showChatGPTDialog(self.ui, _reader_highlight_instance.selected_text.text)

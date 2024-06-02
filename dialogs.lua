@@ -13,24 +13,24 @@ local function showChatGPTDialog(ui, highlightedText, message_history)
     {
       role = "system",
       content =
-      "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Answer as concisely as possible.",
+      "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.  Answer as concisely as possible in Vietnamese.",
     },
   }
   local input_dialog
   input_dialog = InputDialog:new {
-    title = _("Ask a question about the highlighted text"),
-    input_hint = _("Type your question here..."),
+    title = _("Hỏi một câu hỏi về đoạn văn này"),
+    input_hint = _("Nhập câu hỏi của bạn ở đây..."),
     input_type = "text",
     buttons = {
       {
         {
-          text = _("Cancel"),
+          text = _("Hủy bỏ"),
           callback = function()
             UIManager:close(input_dialog)
           end,
         },
         {
-          text = _("Ask"),
+          text = _("Hỏi"),
           callback = function()
             local InfoMessage = require("ui/widget/infomessage")
             local loading = InfoMessage:new {
@@ -65,16 +65,16 @@ local function showChatGPTDialog(ui, highlightedText, message_history)
 
             table.insert(message_history, answer_message)
             UIManager:close(input_dialog)
-            local result_text = _("Highlighted text: ") .. "\"" .. highlightedText .. "\"" ..
-                "\n\n" .. _("User: ") .. question ..
+            local result_text = _("Văn bản được đánh dấu: ") .. "\"" .. highlightedText .. "\"" ..
+                "\n\n" .. _("Người dùng: ") .. question ..
                 "\n\n" .. _("ChatGPT: ") .. answer
 
             local function createResultText(highlightedText, message_history)
-              local result_text = _("Highlighted text: ") .. "\"" .. highlightedText .. "\"\n\n"
+              local result_text = _("Văn bản được đánh dấu: ") .. "\"" .. highlightedText .. "\"\n\n"
 
               for i = 3, #message_history do
                 if message_history[i].role == "user" then
-                  result_text = result_text .. _("User: ") .. message_history[i].content .. "\n\n"
+                  result_text = result_text .. _("Người dùng: ") .. message_history[i].content .. "\n\n"
                 else
                   result_text = result_text .. _("ChatGPT: ") .. message_history[i].content .. "\n\n"
                 end

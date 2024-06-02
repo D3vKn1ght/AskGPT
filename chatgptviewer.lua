@@ -189,7 +189,7 @@ function ChatGPTViewer:init()
   local default_buttons =
   {
     {
-      text = _("Ask Another Question"),
+      text = _("Hỏi câu hỏi khác"),
       id = "ask_another_question",
       callback = function()
         self:askAnotherQuestion()
@@ -303,20 +303,20 @@ end
 function ChatGPTViewer:askAnotherQuestion()
   local input_dialog
   input_dialog = InputDialog:new {
-    title = _("Ask another question"),
+    title = _("Hỏi câu hỏi khác"),
     input = "",
     input_type = "text",
-    description = _("Enter your question for ChatGPT."),
+    description = _("Nhập câu hỏi của bạn ở đây..."),
     buttons = {
       {
         {
-          text = _("Cancel"),
+          text = _("Hủy bỏ"),
           callback = function()
             UIManager:close(input_dialog)
           end,
         },
         {
-          text = _("Ask"),
+          text = _("Hỏi"),
           is_enter_default = true,
           callback = function()
             local input_text = input_dialog:getInputText()

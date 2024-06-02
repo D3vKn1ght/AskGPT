@@ -4,16 +4,10 @@ local ltn12 = require("ltn12")
 local json = require("json")
 
 local function queryChatGPT(message_history)
-  local api_key = API_KEY.key
-  local api_url = "https://api.openai.com/v1/chat/completions"
-
-  local headers = {
-    ["Content-Type"] = "application/json",
-    ["Authorization"] = "Bearer " .. api_key,
-  }
+  local api_url = "http://trungtran.id.vn:8000/chat/"
 
   local requestBody = json.encode({
-    model = "gpt-4o",
+    model = "gpt-3.5-turbo",
     messages = message_history,
   })
 
@@ -22,7 +16,11 @@ local function queryChatGPT(message_history)
   local res, code, responseHeaders = https.request {
     url = api_url,
     method = "POST",
-    headers = headers,
+    headers = {
+      ["accept"] = "application/json",
+      ["Content-Type"] = "application/json",
+      ["Content-Length"] = tostring(#requestBody)
+    },
     source = ltn12.source.string(requestBody),
     sink = ltn12.sink.table(responseBody),
   }
