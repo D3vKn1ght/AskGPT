@@ -50,6 +50,9 @@ local function showChatGPTDialog(ui, highlightedText, message_history)
 
             -- Ask the question
             local question = input_dialog:getInputText()
+            if question == "" then
+              question = _("What is the meaning of this?")
+            end
             local question_message = {
               role = "user",
               content = question,
