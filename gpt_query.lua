@@ -12,7 +12,7 @@ local function queryChatGPT(message_history)
 
   local responseBody = {}
 
-  local res, code, responseHeaders = http.request {
+  local res, code, responseHeaders, status = http.request({
     url = api_url,
     method = "POST",
     headers = {
@@ -22,25 +22,21 @@ local function queryChatGPT(message_history)
     },
     source = ltn12.source.string(requestBody),
     sink = ltn12.sink.table(responseBody),
-  }
+  })
 
   if not res then
-    error("Error querying ChatGPT API: " .. (code or "unknown error"))
+    return "Có lỗi xảy ra, vui lòng thử lại sau"
   end
 
   if code ~= 200 then
-    error("Error querying ChatGPT API: " .. code .. " " .. (responseBody[1] or ""))
+    return "Có lỗi xảy ra, mã lỗi: " .. tostring(code)
   end
 
   local response_str = table.concat(responseBody)
-  local response = json.decode(response_str)
+  local success, response = pcall(json.decode, response_str)
 
-  -- Debug: print the raw response string
-  print("Raw response: ", response_str)
-
-  -- Assuming the response is directly the message
-  if not response then
-    error("Invalid response from ChatGPT API: " .. response_str)
+  if not success then
+    return "Có lỗi xảy ra trong quá trình giải mã phản hồi, vui lòng thử lại sau"
   end
 
   return response
