@@ -3,7 +3,7 @@ local ChatGPTViewer = require("chatgptviewer")
 local UIManager = require("ui/uimanager")
 local _ = require("gettext")
 
-local queryChatGPT = require("gpt_query")
+local queryGemini = require("gpt_query")
 
 local function showChatGPTDialog(ui, highlightedText, message_history)
   local title, author =
@@ -13,7 +13,7 @@ local function showChatGPTDialog(ui, highlightedText, message_history)
     {
       role = "system",
       content =
-      "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.  Answer as concisely as possible in Vietnamese.",
+      "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Answer as concisely as possible in Vietnamese.",
     },
   }
   local input_dialog
@@ -39,31 +39,35 @@ local function showChatGPTDialog(ui, highlightedText, message_history)
             }
             UIManager:show(loading)
 
-            -- Give context to the question
+            -- Cung cấp ngữ cảnh cho câu hỏi
             local context_message = {
               role = "user",
-              content = "I'm reading something titled '" ..
-                  title ..
-                  "' by " .. author .. ". I have a question about the following highlighted text: " .. highlightedText,
+              parts = {
+                { text = "I'm reading something titled '" .. title .. "' by " .. author .. ". I have a question about the following highlighted text: " .. highlightedText }
+              }
             }
             table.insert(message_history, context_message)
 
-            -- Ask the question
+            -- Đặt câu hỏi
             local question = input_dialog:getInputText()
             if question == "" then
               question = _("What is the meaning of this?")
             end
             local question_message = {
               role = "user",
-              content = question,
+              parts = {
+                { text = question }
+              }
             }
             table.insert(message_history, question_message)
 
-            local answer = queryChatGPT(message_history)
-            -- Save the answer to the message history
+            local answer = queryGemini(message_history)
+            -- Lưu câu trả lời vào lịch sử tin nhắn
             local answer_message = {
               role = "assistant",
-              content = answer,
+              parts = {
+                { text = answer }
+              }
             }
 
             table.insert(message_history, answer_message)
@@ -77,9 +81,9 @@ local function showChatGPTDialog(ui, highlightedText, message_history)
 
               for i = 3, #message_history do
                 if message_history[i].role == "user" then
-                  result_text = result_text .. _("Người dùng: ") .. message_history[i].content .. "\n\n"
+                  result_text = result_text .. _("Người dùng: ") .. message_history[i].parts[1].text .. "\n\n"
                 else
-                  result_text = result_text .. _("ChatGPT: ") .. message_history[i].content .. "\n\n"
+                  result_text = result_text .. _("ChatGPT: ") .. message_history[i].parts[1].text .. "\n\n"
                 end
               end
 
@@ -88,26 +92,26 @@ local function showChatGPTDialog(ui, highlightedText, message_history)
 
 
             local function handleNewQuestion(chatgpt_viewer, question)
-              -- Add the new question to the message history
-              table.insert(message_history, { role = "user", content = question })
+              -- Thêm câu hỏi mới vào lịch sử tin nhắn
+              table.insert(message_history, { role = "user", parts = { { text = question } } })
 
-              -- Send the query to ChatGPT with the updated message_history
-              local answer = queryChatGPT(message_history)
+              -- Gửi truy vấn đến Gemini với lịch sử tin nhắn đã cập nhật
+              local answer = queryGemini(message_history)
 
-              -- Add the answer to the message history
-              table.insert(message_history, { role = "assistant", content = answer })
+              -- Thêm câu trả lời vào lịch sử tin nhắn
+              table.insert(message_history, { role = "assistant", parts = { { text = answer } } })
 
-              -- Update the result text
+              -- Cập nhật văn bản kết quả
               local result_text = createResultText(highlightedText, message_history)
 
-              -- Update the text and refresh the viewer
+              -- Cập nhật văn bản và làm mới viewer
               chatgpt_viewer:update(result_text)
             end
 
             local chatgpt_viewer = ChatGPTViewer:new {
               title = _("AskGPT"),
               text = result_text,
-              onAskQuestion = handleNewQuestion, -- Pass the callback function
+              onAskQuestion = handleNewQuestion, -- Truyền callback function
             }
 
             UIManager:show(chatgpt_viewer)
