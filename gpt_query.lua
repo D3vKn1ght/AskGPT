@@ -25,12 +25,12 @@ local function queryGemini(message_history)
     sink = ltn12.sink.table(responseBody),
   }
 
-  -- Debugging: Print the request and response details
-  print("Request URL: ", api_url)
-  print("Request Headers: ", json.encode(headers))
-  print("Request Body: ", requestBody)
-  print("Response Code: ", code)
-  print("Response Body: ", table.concat(responseBody))
+  -- -- Debugging: Print the request and response details
+  -- print("Request URL: ", api_url)
+  -- print("Request Headers: ", json.encode(headers))
+  -- print("Request Body: ", requestBody)
+  -- print("Response Code: ", code)
+  -- print("Response Body: ", table.concat(responseBody))
 
   if code ~= 200 then
     return "Có lỗi xảy ra, mã lỗi: " .. tostring(code) .. "\nPhản hồi: " .. table.concat(responseBody)

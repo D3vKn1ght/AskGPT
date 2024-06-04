@@ -9,13 +9,7 @@ local function showChatGPTDialog(ui, highlightedText, message_history)
   local title, author =
       ui.document:getProps().title or _("Unknown Title"),
       ui.document:getProps().authors or _("Unknown Author")
-  local message_history = message_history or {
-    {
-      role = "system",
-      content =
-      "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Answer as concisely as possible in Vietnamese.",
-    },
-  }
+  local message_history = message_history or { }
   local input_dialog
   input_dialog = InputDialog:new {
     title = _("Hỏi một câu hỏi về đoạn văn này"),
@@ -43,6 +37,7 @@ local function showChatGPTDialog(ui, highlightedText, message_history)
             local context_message = {
               role = "user",
               parts = {
+                {text ="The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. Answer as concisely as possible in Vietnamese." },
                 { text = "I'm reading something titled '" .. title .. "' by " .. author .. ". I have a question about the following highlighted text: " .. highlightedText }
               }
             }
@@ -64,7 +59,7 @@ local function showChatGPTDialog(ui, highlightedText, message_history)
             local answer = queryGemini(message_history)
             -- Lưu câu trả lời vào lịch sử tin nhắn
             local answer_message = {
-              role = "assistant",
+              role = "model",
               parts = {
                 { text = answer }
               }
@@ -99,7 +94,7 @@ local function showChatGPTDialog(ui, highlightedText, message_history)
               local answer = queryGemini(message_history)
 
               -- Thêm câu trả lời vào lịch sử tin nhắn
-              table.insert(message_history, { role = "assistant", parts = { { text = answer } } })
+              table.insert(message_history, { role = "model", parts = { { text = answer } } })
 
               -- Cập nhật văn bản kết quả
               local result_text = createResultText(highlightedText, message_history)
